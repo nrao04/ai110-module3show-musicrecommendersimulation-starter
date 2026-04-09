@@ -12,15 +12,17 @@
 
 ## 3. How the model works
 
-Each song is described by genre, mood, several 0–1 audio-ish features (energy, valence, danceability, acousticness), and tempo. The user picks a target genre and mood, a target energy between 0 and 1, and whether they lean acoustic or electronic. The scorer adds a chunk of points when genre or mood lines up, awards more when energy is numerically close to the target (not merely “high energy”), and adds a smaller tail of points for how acoustic the track is depending on that boolean. If you pass optional targets for valence or danceability in the prefs dict, those get the same “closer is better” treatment.
+Each song is described by genre, mood, several 0–1 audio-ish features (energy, valence, danceability, acousticness), tempo, plus extra columns used in the stretch build: popularity (0–100), release decade, pipe-separated mood tags, a coarse lyric theme, and language. The user passes the usual genre/mood/energy/acoustic prefs and can add optional targets (e.g. target popularity, decade, favorite mood tags, lyric theme, language) so those fields contribute. The scorer adds points when genre or mood lines up, when energy is close to the target, and for acoustic vs produced taste. Optional valence/danceability in the prefs dict use the same “closer is better” idea.
 
-There is no training step; changing behavior means changing weights or the CSV, which is deliberate so you can audit the logic.
+There are also **scoring modes** (`balanced`, `genre_first`, `mood_first`, `energy_focused`) that scale how much each signal weighs—same rules, different emphasis. After scoring, an optional **diversity** step fills the top K greedily while penalizing repeat artists and repeat genres so one label does not dominate the shortlist.
+
+There is no training step; changing behavior means changing weights, mode, or the CSV.
 
 ## 4. Data
 
 - **Size:** 18 fictional rows in `data/songs.csv` (10 starter tracks + 8 added for variety).  
-- **Fresh fields added in the expansion:** Extra genres/moods (e.g. Latin, classical, metal, hip hop, folk) and the same numeric columns for consistency.  
-- **Limit:** The rows are made-up; distributions do not mirror real listening, and several real-world axes (language, region, year, popularity, explicit lyrics) are missing on purpose.
+- **Columns:** Original audio-ish fields plus popularity, release decade, mood tags, lyric theme, and language for the extended scorer.  
+- **Limit:** Everything is synthetic; it still skips real-world mess (real charts, rights, listening logs, lyrics NLP, demographics). Explicit lyrics and “true” regional charts are not modeled.
 
 ## 5. Strengths
 
@@ -42,9 +44,10 @@ Automated checks: `pytest` covers that the OOP `Recommender` ranks the seeded po
 
 ## 8. Future work
 
-- Add a **diversity penalty** (e.g. down-rank repeating artists or genres in the top K).  
-- Let users express **soft genre blends** instead of one string.  
-- Fold in a laughably small collaborative layer—two fake user histories—to contrast with the pure content score.
+- Stronger **fairness / exposure** metrics (not just artist/genre diversity in top K).  
+- **Soft genre blends** or multi-label genres instead of one string plus substring hacks.  
+- A tiny **collaborative** stub (two fake user histories) to contrast with the pure content score.  
+- Richer **evaluation** (held-out prefs, human ratings) beyond eyeballing tables.
 
 ## 9. Personal reflection
 
