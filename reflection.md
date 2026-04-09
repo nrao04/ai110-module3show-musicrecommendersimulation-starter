@@ -1,27 +1,19 @@
-# Profile comparisons (what changed and why)
+# Reflection — comparing profiles
 
-Plain-language notes comparing pairs of runs from `python -m src.main`. Think of it as explaining the terminal to someone who will never read the code.
+I ran `python -m src.main` a bunch of times with different fake users and tried to explain what moved in plain terms. If you’re not looking at the code, the idea is: same spreadsheet, different sliders, different top five.
 
-## High-energy pop vs chill lofi
+## Pop (high energy) vs lofi (chill)
 
-**What changed:** The winner list stops being about peppy, produced hooks and slides toward softer drums, higher acousticness numbers, and the `lofi` label.
+When I switch from the upbeat pop profile to the chill lofi one, the list stops trying to be loud and shiny. Lofi rows win because I turned on “likes acoustic,” so the scorer actually rewards tracks that are more acoustic. Stuff like Library Rain and Midnight Coding floats up. Pop was basically doing the opposite: it favors produced-sounding tracks, so the acoustic lofi picks never really had a shot there.
 
-**Why that makes sense:** Chill lofi turns on the `likes_acoustic` flag, so songs that are basically pillow-textured (**Library Rain**, **Midnight Coding**) pick up honest points. Pop profiles were biased toward crunchy, synth-heavy masters because acoustic tracks lose that branch.
+## Pop vs rock (intense)
 
-## High-energy pop vs deep intense rock
+Rock + intense mood pulls Storm Runner to the top instead of Sunrise City. Energy is still high in both profiles, but “happy” vs “intense” changes who gets the mood bonus. One thing that stuck out: Gym Hero is still pop, but it’s tagged intense, so it hangs around the rock list too. That’s not a bug so much as a reminder that one tag can drag a song into a list where the genre doesn’t match what you pictured.
 
-**What changed:** The top slot jumps from “bright happy pop” (`Sunrise City`) to “angry tempo” rock (`Storm Runner`), and mood `intense` becomes part of the bonus.
+## Lofi vs the weird “moody + max energy” profile
 
-**Why that makes sense:** Same energy target ballpark, different mood keyword—so the recommender stops paying the +1 happy bonus to Rooftop Lights and pays intense where it exists. Gym Hero still sneaks high for rock because it carries intense mood even though the genre is pop—useful, because it exposes how mood matching can drag tracks across aisle lines.
+The chill profile keeps energy low, so soft tracks make sense. The adversarial one wants moody *and* almost max energy, which pulls the ranking in two directions. Night Drive Loop gets some love because it’s moody, but the really loud stuff wins on energy. Gym Hero ends up high again because it’s loud and still pop, even though it isn’t “moody” in the data. So you get these compromises that come from the tags being incomplete, not from the math being magic.
 
-## Chill lofi vs adversarial (moody + max energy)
+## Fiddling with weights
 
-**What changed:** Chill profiles anchored near 0.35 energy; the adversarial profile cranks energy to 0.95 while keeping mood `moody`.
-
-**Why that makes sense:** You get a tug-of-war: mood match pulls toward **Night Drive Loop** (synthwave + moody), but the huge energy gap penalty hurts softer moody songs. **Gym Hero** rises because it is loud, intense pop that still clears the genre bump—even though “moody” is not its label—which is exactly the kind of edge case that reminds you metadata tags are imperfect.
-
-## Pop default vs weight experiment (README)
-
-**What changed:** When I halved genre weight and doubled the energy cap, the middle ranks shuffled more than the absolute #1 in my run, because several contenders already sat close to the 0.8 energy target.
-
-**Why that makes sense:** You told the scorer to care less about the sign on the genre column and more about being near the numeric vibe. That is how real product teams accidentally ship “everything feels the same tempo” if they over-correct.
+I messed with the genre vs energy weights in `recommender.py` for a bit (described in the README). When I downweighted genre and pushed energy harder, the ordering in the middle changed more than #1 did, because a few songs were already sitting close to the target energy. Felt like a good reality check: if you only tune one knob, you can end up with “everything sounds the same speed” even when the titles look different.

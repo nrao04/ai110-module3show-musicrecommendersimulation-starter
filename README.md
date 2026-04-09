@@ -1,41 +1,29 @@
 # Music Recommender Simulation
 
-## Project summary
+## What this is
 
-This repo is a tiny, transparent recommender: each song is a row of tags and numbers, and a “user” is just a few preferences in a dictionary. The program scores every track with simple weighted rules, sorts highest-first, and prints why each pick earned its points. There is no machine learning—only arithmetic—which makes it easier to see how choices in weighting and data shape what feels “personalized.”
+It’s a fake recommender: songs live in a CSV, your “user” is a small dict of preferences, and the program just adds points and sorts. No training step, no API. I like that because you can read `score_song` and actually see why something ranked where it did.
 
-Real apps like Spotify blend **collaborative filtering** (what similar listeners do) with **content-based** signals (tempo, mood, audio features). This simulation stays content-only: it never learns from other users, so it is closer to “find songs that look like what you said you like on paper.”
+Spotify-style apps mix **collaborative** stuff (people like you) with **content** stuff (tempo, mood, etc.). This project is content-only, so it’s more like “match my tags” than “learn from the crowd.”
 
 ---
 
-## How the system works
+## How it works (quick version)
 
-**Features on each song (from `data/songs.csv`):**  
-`id`, `title`, `artist`, `genre`, `mood`, `energy` (0–1), `tempo_bpm`, `valence`, `danceability`, `acousticness`, plus extended fields **`popularity` (0–100)**, **`release_decade`**, pipe-separated **`mood_tags`**, **`lyric_theme`**, and **`language`**. Optional prefs like `target_popularity`, `target_decade`, `favorite_mood_tags`, `lyric_theme`, and `language` turn those columns into extra score terms (see `score_song` in `src/recommender.py`).
+**What’s in each song row:** the usual suspects (genre, mood, energy, tempo, valence, danceability, acousticness) plus a few extras I added for the stretch goals: popularity 0–100, release decade, mood tags separated with `|`, a rough `lyric_theme`, and `language`. If your prefs dict includes things like `target_popularity` or `favorite_mood_tags`, those columns start affecting the score too. All the nitty-gritty is in `src/recommender.py`.
 
-**User profile (two shapes in this project):**  
-- CLI / functional style: dict keys like `genre`, `mood`, `energy`, `likes_acoustic`, and optionally `target_valence`, `target_danceability`.  
-- Tests / OOP style: `UserProfile(favorite_genre, favorite_mood, target_energy, likes_acoustic)` which maps to the same scoring core.
+**How we represent a user:**  
+Either a plain dict (what `main.py` uses) or the `UserProfile` class the tests use. Same scoring underneath.
 
-**Scoring recipe (current defaults in `src/recommender.py`):**  
-- **Genre match:** +2.0 if the user’s genre aligns with the song’s genre (substring match counts so “pop” still relates to “indie pop”).  
-- **Mood match:** +1.0 for an exact mood string match (case-insensitive).  
-- **Energy alignment:** up to +2.0 from \(1 - |energy_{song} - energy_{user}|\), so closeness matters—not “higher is always better.”  
-- **Optional:** valence and danceability alignment if you add those keys to the prefs dict.  
-- **Production vs acoustic:** if `likes_acoustic` is set, we add up to ~1.2 based on whether the track is acoustic or produced.
+**Rough scoring idea:** points if genre lines up (I allow substring stuff so “pop” can still hit “indie pop”), points if mood matches exactly, more points if energy is *close* to what you asked for (not just “higher = better”). There’s optional valence/danceability if you add those keys. `likes_acoustic` nudges scores toward acoustic vs produced tracks.
 
-**Ranking:** `recommend_songs` scores the whole catalog, sorts by model score, then optionally runs a **diversity pass** so repeat artists/genres are penalized when filling the top *K*. Terminal output uses **`tabulate`** tables that include the full **reasons** string.
+After scoring, we sort. There’s also an optional **diversity** step so the top K doesn’t fill up with the same artist or genre over and over. The CLI prints **tables** (using `tabulate`) with a Reasons column so you’re not guessing.
 
-### Optional extensions (challenges)
+### Stretch / optional pieces
 
-| # | What |
-|---|------|
-| **1 – Advanced features** | Five new CSV columns with math: popularity alignment, decade proximity, overlapping mood tags, lyric theme match, language match. |
-| **2 – Scoring modes** | Strategy-style `ModeMultipliers`: `balanced`, `genre_first`, `mood_first`, `energy_focused` (see `SCORING_MODES` in `recommender.py`). `main.py` compares modes for the first profile. |
-| **3 – Diversity** | Greedy top-*K* with `DEFAULT_ARTIST_REPEAT_PENALTY` / `DEFAULT_GENRE_REPEAT_PENALTY` so a second pick from the same artist/genre has to “earn back” the slot. |
-| **4 – Table output** | `tabulate` GitHub-style tables: `#`, Title, Artist, Score, Reasons. |
+I bundled four extras: extra CSV fields + math for them, a few **modes** (`balanced`, `genre_first`, `mood_first`, `energy_focused`) that scale how much each kind of signal matters, the diversity penalty above, and the table output. First profile in `main.py` runs all four modes so you can compare; the other profiles just use balanced so the terminal doesn’t go forever.
 
-### Data flow (Mermaid)
+### Flow (Mermaid)
 
 ```mermaid
 flowchart LR
@@ -48,20 +36,11 @@ flowchart LR
   SORT --> TOP[Top K recommendations]
 ```
 
-### Algorithm recipe (plain English)
-
-1. Load every row and convert numbers to floats so we can subtract and compare.  
-2. For one user, loop each song and add points for category matches and for “how close” continuous features are.  
-3. Sort all songs by total points and take the first *K*.  
-4. Attach the reason strings so the ranking is explainable in the terminal.
-
-**Bias note baked into this design:** genre is the heaviest discrete bump. If the catalog is uneven—lots of pop, little classical—a pop-leaning profile will keep seeing the same corner of the library even when mood and energy fit something else.
+**One bias to keep in mind:** genre still carries a lot of weight. If the CSV is mostly one style, that style will keep winning even when mood or energy would have pointed somewhere else.
 
 ---
 
-## Getting started
-
-### Setup
+## Setup
 
 ```bash
 cd ai110-module3show-musicrecommendersimulation-starter
@@ -70,17 +49,15 @@ source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Run the CLI
-
-From the **project root** (the folder that contains `data/` and `src/`):
+Run from the repo root (folder that has `data/` and `src/`):
 
 ```bash
 python -m src.main
 ```
 
-You should see `Loaded songs: 18` and several labeled profile blocks.
+You should see something like `Loaded songs: 18`, then tables for different profiles.
 
-### Run tests
+Tests:
 
 ```bash
 pytest
@@ -88,46 +65,36 @@ pytest
 
 ---
 
-## Sample terminal output
+## What the output looks like
 
-You can paste a real screenshot into your write-up if your course asks for it; here is what I get locally after a fresh run (titles, scores, and reasons):
+The app prints GitHub-style tables now, not the old bullet list. Roughly like:
 
 ```
-Loaded songs: 18
-
-High-energy pop (default)
-=============================
-  • Sunrise City  |  score 5.94
-    genre match (+2.0); mood match (+1.0); energy alignment (+1.96; gap 0.02 from target 0.80); prefers produced/electric (+0.98)
-
-  • Rooftop Lights  |  score 5.70
-    genre match (+2.0); mood match (+1.0); energy alignment (+1.92; gap 0.04 from target 0.80); prefers produced/electric (+0.78)
+| # | Title        | Artist    | Score | Reasons |
+|---|--------------|-----------|-------|---------|
+| 1 | Sunrise City | Neon Echo | 9.82  | genre match; mood match; energy alignment; ... |
 ```
 
-*(Run `python -m src.main` on your machine for the full multi-profile printout.)*
+Your numbers will depend on the exact weights and prefs. If a rubric wants a screenshot, grab one from your own terminal after a run.
 
 ---
 
-## Experiments you tried
+## Stuff I tried
 
-**Weight shift (documented rerun):** In `recommender.py`, the weights are module-level constants. For a sensitivity check, I temporarily set `WEIGHT_GENRE_MATCH` to `1.0` and `WEIGHT_ENERGY_ALIGNMENT` to `4.0`, re-ran `python -m src.main`, and the “High-energy pop” list leaned harder on whoever matched the 0.8 energy target—even when another track had a stronger genre fit. That was expected: I traded off “stay in my lane” against “match the BPM/energy feel.”
+I temporarily changed the constants in `recommender.py`: lower genre weight, higher energy weight, ran again. The list shifted toward whoever sat near the target energy, even when another song was a “truer” genre match. Kind of what I expected.
 
-**Feature removal thought experiment:** Commenting out the mood check (not left that way in the repo) mostly shuffles the middle of the list while leaving energy-heavy pop tracks near the top, which suggested mood was doing real work for separating “happy” from “intense” pop.
-
----
-
-## Limitations and risks
-
-- Fifteen–twenty tracks is not a music service; gaps in genre are really gaps in what the recommender can ever surface.  
-- Lyrics, culture, novelty, and “people like you” are absent—everything is a filter bubble you hand-designed.  
-- Substring genre matching helps small catalogs but can accidentally glue unrelated tags if names get sloppy.
-
-Details and evaluation notes live in [`model_card.md`](model_card.md) and [`reflection.md`](reflection.md).
+I also mentally removed the mood line (didn’t leave it commented out in the repo) and noticed happy vs intense pop would blur together more. So mood was doing real work for those cases.
 
 ---
 
-## Reflection (short)
+## Honest limitations
 
-Building this made the Spotify/TikTok black box feel smaller: ranking is often “add weighted features, sort, done.” The uncomfortable part is how quickly a +2 on genre drowns out subtler signals if the data is skewed. I used the editor and tests to sanity-check the CSV typing and the sort order; for weights I still trusted my own ears and a couple of fake user profiles more than a generic suggestion list.
+Eighteen fake songs is not a catalog. No lyrics, no social signals, no “you listened to this last week.” Genre substring matching is handy for a tiny dataset but could get weird if someone names genres carelessly.
 
-See the model card for a fuller write-up and personal notes.
+More detail in [`model_card.md`](model_card.md) and the informal notes in [`reflection.md`](reflection.md).
+
+---
+
+## Tiny reflection
+
+Before this, recommenders felt like a black box. After, it’s mostly: define features, pick weights, sort. The part that still feels “AI-ish” to people is really just which weights and which data someone chose. I used tests to catch dumb mistakes; for whether the rankings “feel right,” I still had to use my own judgment on the fake profiles.
