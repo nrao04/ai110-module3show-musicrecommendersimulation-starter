@@ -198,6 +198,7 @@ def _diversify_song_tuples(
     """
     Greedy top-k with penalties for repeating artists or genres already selected.
     Returns tuples keeping the original score and explanation (penalty affects selection only).
+    Final order is sorted by model score (desc) so the printed rank matches score magnitude.
     """
     if k <= 0:
         return []
@@ -225,6 +226,7 @@ def _diversify_song_tuples(
         picked.append((sc, song, expl))
         picked_artists.add(song.artist or "")
         picked_genres.add(_normalize_str(song.genre or ""))
+    picked.sort(key=lambda x: x[0], reverse=True)
     return picked
 
 
@@ -432,4 +434,5 @@ def _diversify_dict_tuples(
         picked.append((sc, song, expl))
         picked_artists.add(str(song.get("artist", "")))
         picked_genres.add(_normalize_str(str(song.get("genre", ""))))
+    picked.sort(key=lambda x: x[0], reverse=True)
     return picked
