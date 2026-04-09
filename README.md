@@ -11,7 +11,7 @@ Real apps like Spotify blend **collaborative filtering** (what similar listeners
 ## How the system works
 
 **Features on each song (from `data/songs.csv`):**  
-`id`, `title`, `artist`, `genre`, `mood`, `energy` (0–1), `tempo_bpm`, `valence`, `danceability`, `acousticness`, plus optional extra targets in code if you pass them in the prefs dict.
+`id`, `title`, `artist`, `genre`, `mood`, `energy` (0–1), `tempo_bpm`, `valence`, `danceability`, `acousticness`, plus extended fields **`popularity` (0–100)**, **`release_decade`**, pipe-separated **`mood_tags`**, **`lyric_theme`**, and **`language`**. Optional prefs like `target_popularity`, `target_decade`, `favorite_mood_tags`, `lyric_theme`, and `language` turn those columns into extra score terms (see `score_song` in `src/recommender.py`).
 
 **User profile (two shapes in this project):**  
 - CLI / functional style: dict keys like `genre`, `mood`, `energy`, `likes_acoustic`, and optionally `target_valence`, `target_danceability`.  
@@ -24,7 +24,16 @@ Real apps like Spotify blend **collaborative filtering** (what similar listeners
 - **Optional:** valence and danceability alignment if you add those keys to the prefs dict.  
 - **Production vs acoustic:** if `likes_acoustic` is set, we add up to ~1.2 based on whether the track is acoustic or produced.
 
-**Ranking:** `recommend_songs` calls `score_song` on the whole catalog, then uses `sorted(..., reverse=True)` so the original list is untouched; each result bundles the score and a list of human-readable reasons.
+**Ranking:** `recommend_songs` scores the whole catalog, sorts by model score, then optionally runs a **diversity pass** so repeat artists/genres are penalized when filling the top *K*. Terminal output uses **`tabulate`** tables that include the full **reasons** string.
+
+### Optional extensions (challenges)
+
+| # | What |
+|---|------|
+| **1 – Advanced features** | Five new CSV columns with math: popularity alignment, decade proximity, overlapping mood tags, lyric theme match, language match. |
+| **2 – Scoring modes** | Strategy-style `ModeMultipliers`: `balanced`, `genre_first`, `mood_first`, `energy_focused` (see `SCORING_MODES` in `recommender.py`). `main.py` compares modes for the first profile. |
+| **3 – Diversity** | Greedy top-*K* with `DEFAULT_ARTIST_REPEAT_PENALTY` / `DEFAULT_GENRE_REPEAT_PENALTY` so a second pick from the same artist/genre has to “earn back” the slot. |
+| **4 – Table output** | `tabulate` GitHub-style tables: `#`, Title, Artist, Score, Reasons. |
 
 ### Data flow (Mermaid)
 
