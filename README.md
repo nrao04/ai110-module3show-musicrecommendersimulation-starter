@@ -65,17 +65,295 @@ pytest
 
 ---
 
-## What the output looks like
+## Sample output (`python -m src.main`)
 
-The app prints GitHub-style tables now, not the old bullet list. Roughly like:
+Captured from a local run with the bundled `data/songs.csv` and current weights. If you change scores or data, re-run and replace this block (or paste your own terminal).
 
+```text
+Loading songs from data/songs.csv...
+Loaded songs: 18
+
+Available scoring modes: balanced, energy_focused, genre_first, mood_first
+
+## High-energy pop (default)
+
+** Mode: balanced ** (diversity: −0.85 repeat artist, −0.40 repeat genre)
+
+|   # | Title             | Artist        |   Score | Reasons                                                 |
+|-----|-------------------|---------------|---------|---------------------------------------------------------|
+|   1 | Sunrise City      | Neon Echo     |    9.82 | genre match (+2.00); mood match (+1.00); energy         |
+|     |                   |               |         | alignment (+1.96; gap 0.02 from target 0.80); prefers   |
+|     |                   |               |         | produced/electric (+0.98); popularity fit (+0.69; song  |
+|     |                   |               |         | 78 vs target 70); era fit (+1.10; decade 2020 vs target |
+|     |                   |               |         | 2020); mood tags overlap ['euphoric', 'nostalgic']      |
+|     |                   |               |         | (+0.84); lyric theme match (+0.90); language match      |
+|     |                   |               |         | (+0.35)                                                 |
+|   2 | Rooftop Lights    | Indigo Parade |    8.29 | genre match (+2.00); mood match (+1.00); energy         |
+|     |                   |               |         | alignment (+1.92; gap 0.04 from target 0.80); prefers   |
+|     |                   |               |         | produced/electric (+0.78); popularity fit (+0.72; song  |
+|     |                   |               |         | 66 vs target 70); era fit (+1.10; decade 2023 vs target |
+|     |                   |               |         | 2020); mood tags overlap ['euphoric'] (+0.42); language |
+|     |                   |               |         | match (+0.35)                                           |
+|   3 | Gym Hero          | Max Pulse     |    7.37 | genre match (+2.00); energy alignment (+1.74; gap 0.13  |
+|     |                   |               |         | from target 0.80); prefers produced/electric (+1.14);   |
+|     |                   |               |         | popularity fit (+0.61; song 88 vs target 70); era fit   |
+|     |                   |               |         | (+1.10; decade 2022 vs target 2020); mood tags overlap  |
+|     |                   |               |         | ['euphoric'] (+0.42); language match (+0.35)            |
+|   4 | Battery Heart     | K7 Vega       |    6.37 | energy alignment (+1.84; gap 0.08 from target 0.80);    |
+|     |                   |               |         | prefers produced/electric (+1.10); popularity fit       |
+|     |                   |               |         | (+0.65; song 83 vs target 70); era fit (+1.10; decade   |
+|     |                   |               |         | 2021 vs target 2020); mood tags overlap ['euphoric']    |
+|     |                   |               |         | (+0.42); lyric theme match (+0.90); language match      |
+|     |                   |               |         | (+0.35)                                                 |
+|   5 | Samba Cartography | Lua Vermelha  |    6.14 | mood match (+1.00); energy alignment (+1.84; gap 0.08   |
+|     |                   |               |         | from target 0.80); prefers produced/electric (+1.06);   |
+|     |                   |               |         | popularity fit (+0.72; song 74 vs target 70); era fit   |
+|     |                   |               |         | (+1.10; decade 2022 vs target 2020); mood tags overlap  |
+|     |                   |               |         | ['euphoric'] (+0.42)                                    |
+
+** Mode: genre_first ** (diversity: −0.85 repeat artist, −0.40 repeat genre)
+
+|   # | Title             | Artist        |   Score | Reasons                                                 |
+|-----|-------------------|---------------|---------|---------------------------------------------------------|
+|   1 | Sunrise City      | Neon Echo     |   10.05 | genre match (+3.10); mood match (+0.72); energy         |
+|     |                   |               |         | alignment (+1.72; gap 0.02 from target 0.80); prefers   |
+|     |                   |               |         | produced/electric (+0.93); popularity fit (+0.63; song  |
+|     |                   |               |         | 78 vs target 70); era fit (+1.01; decade 2020 vs target |
+|     |                   |               |         | 2020); mood tags overlap ['euphoric', 'nostalgic']      |
+|     |                   |               |         | (+0.77); lyric theme match (+0.83); language match      |
+|     |                   |               |         | (+0.32)                                                 |
+|   2 | Rooftop Lights    | Indigo Parade |    8.63 | genre match (+3.10); mood match (+0.72); energy         |
+|     |                   |               |         | alignment (+1.69; gap 0.04 from target 0.80); prefers   |
+|     |                   |               |         | produced/electric (+0.74); popularity fit (+0.66; song  |
+|     |                   |               |         | 66 vs target 70); era fit (+1.01; decade 2023 vs target |
+|     |                   |               |         | 2020); mood tags overlap ['euphoric'] (+0.39); language |
+|     |                   |               |         | match (+0.32)                                           |
+|   3 | Gym Hero          | Max Pulse     |    8    | genre match (+3.10); energy alignment (+1.53; gap 0.13  |
+|     |                   |               |         | from target 0.80); prefers produced/electric (+1.08);   |
+|     |                   |               |         | popularity fit (+0.57; song 88 vs target 70); era fit   |
+|     |                   |               |         | (+1.01; decade 2022 vs target 2020); mood tags overlap  |
+|     |                   |               |         | ['euphoric'] (+0.39); language match (+0.32)            |
+|   4 | Battery Heart     | K7 Vega       |    5.82 | energy alignment (+1.62; gap 0.08 from target 0.80);    |
+|     |                   |               |         | prefers produced/electric (+1.05); popularity fit       |
+|     |                   |               |         | (+0.60; song 83 vs target 70); era fit (+1.01; decade   |
+|     |                   |               |         | 2021 vs target 2020); mood tags overlap ['euphoric']    |
+|     |                   |               |         | (+0.39); lyric theme match (+0.83); language match      |
+|     |                   |               |         | (+0.32)                                                 |
+|   5 | Samba Cartography | Lua Vermelha  |    5.4  | mood match (+0.72); energy alignment (+1.62; gap 0.08   |
+|     |                   |               |         | from target 0.80); prefers produced/electric (+1.00);   |
+|     |                   |               |         | popularity fit (+0.66; song 74 vs target 70); era fit   |
+|     |                   |               |         | (+1.01; decade 2022 vs target 2020); mood tags overlap  |
+|     |                   |               |         | ['euphoric'] (+0.39)                                    |
+
+** Mode: mood_first ** (diversity: −0.85 repeat artist, −0.40 repeat genre)
+
+|   # | Title             | Artist        |   Score | Reasons                                                 |
+|-----|-------------------|---------------|---------|---------------------------------------------------------|
+|   1 | Sunrise City      | Neon Echo     |    9.59 | genre match (+1.56); mood match (+1.60); energy         |
+|     |                   |               |         | alignment (+1.76; gap 0.02 from target 0.80); prefers   |
+|     |                   |               |         | produced/electric (+0.98); popularity fit (+0.66; song  |
+|     |                   |               |         | 78 vs target 70); era fit (+1.04; decade 2020 vs target |
+|     |                   |               |         | 2020); mood tags overlap ['euphoric', 'nostalgic']      |
+|     |                   |               |         | (+0.80); lyric theme match (+0.85); language match      |
+|     |                   |               |         | (+0.33)                                                 |
+|   2 | Rooftop Lights    | Indigo Parade |    8.13 | genre match (+1.56); mood match (+1.60); energy         |
+|     |                   |               |         | alignment (+1.73; gap 0.04 from target 0.80); prefers   |
+|     |                   |               |         | produced/electric (+0.78); popularity fit (+0.68; song  |
+|     |                   |               |         | 66 vs target 70); era fit (+1.04; decade 2023 vs target |
+|     |                   |               |         | 2020); mood tags overlap ['euphoric'] (+0.40); language |
+|     |                   |               |         | match (+0.33)                                           |
+|   3 | Gym Hero          | Max Pulse     |    6.63 | genre match (+1.56); energy alignment (+1.57; gap 0.13  |
+|     |                   |               |         | from target 0.80); prefers produced/electric (+1.14);   |
+|     |                   |               |         | popularity fit (+0.58; song 88 vs target 70); era fit   |
+|     |                   |               |         | (+1.04; decade 2022 vs target 2020); mood tags overlap  |
+|     |                   |               |         | ['euphoric'] (+0.40); language match (+0.33)            |
+|   4 | Samba Cartography | Lua Vermelha  |    6.44 | mood match (+1.60); energy alignment (+1.66; gap 0.08   |
+|     |                   |               |         | from target 0.80); prefers produced/electric (+1.06);   |
+|     |                   |               |         | popularity fit (+0.68; song 74 vs target 70); era fit   |
+|     |                   |               |         | (+1.04; decade 2022 vs target 2020); mood tags overlap  |
+|     |                   |               |         | ['euphoric'] (+0.40)                                    |
+|   5 | Battery Heart     | K7 Vega       |    6.01 | energy alignment (+1.66; gap 0.08 from target 0.80);    |
+|     |                   |               |         | prefers produced/electric (+1.10); popularity fit       |
+|     |                   |               |         | (+0.62; song 83 vs target 70); era fit (+1.04; decade   |
+|     |                   |               |         | 2021 vs target 2020); mood tags overlap ['euphoric']    |
+|     |                   |               |         | (+0.40); lyric theme match (+0.85); language match      |
+|     |                   |               |         | (+0.33)                                                 |
+
+** Mode: energy_focused ** (diversity: −0.85 repeat artist, −0.40 repeat genre)
+
+|   # | Title             | Artist        |   Score | Reasons                                                 |
+|-----|-------------------|---------------|---------|---------------------------------------------------------|
+|   1 | Sunrise City      | Neon Echo     |    9.92 | genre match (+1.64); mood match (+0.82); energy         |
+|     |                   |               |         | alignment (+3.04; gap 0.02 from target 0.80); prefers   |
+|     |                   |               |         | produced/electric (+0.93); popularity fit (+0.62; song  |
+|     |                   |               |         | 78 vs target 70); era fit (+0.99; decade 2020 vs target |
+|     |                   |               |         | 2020); mood tags overlap ['euphoric', 'nostalgic']      |
+|     |                   |               |         | (+0.76); lyric theme match (+0.81); language match      |
+|     |                   |               |         | (+0.32)                                                 |
+|   2 | Rooftop Lights    | Indigo Parade |    8.51 | genre match (+1.64); mood match (+0.82); energy         |
+|     |                   |               |         | alignment (+2.98; gap 0.04 from target 0.80); prefers   |
+|     |                   |               |         | produced/electric (+0.74); popularity fit (+0.65; song  |
+|     |                   |               |         | 66 vs target 70); era fit (+0.99; decade 2023 vs target |
+|     |                   |               |         | 2020); mood tags overlap ['euphoric'] (+0.38); language |
+|     |                   |               |         | match (+0.32)                                           |
+|   3 | Gym Hero          | Max Pulse     |    7.66 | genre match (+1.64); energy alignment (+2.70; gap 0.13  |
+|     |                   |               |         | from target 0.80); prefers produced/electric (+1.08);   |
+|     |                   |               |         | popularity fit (+0.55; song 88 vs target 70); era fit   |
+|     |                   |               |         | (+0.99; decade 2022 vs target 2020); mood tags overlap  |
+|     |                   |               |         | ['euphoric'] (+0.38); language match (+0.32)            |
+|   4 | Battery Heart     | K7 Vega       |    6.98 | energy alignment (+2.85; gap 0.08 from target 0.80);    |
+|     |                   |               |         | prefers produced/electric (+1.05); popularity fit       |
+|     |                   |               |         | (+0.59; song 83 vs target 70); era fit (+0.99; decade   |
+|     |                   |               |         | 2021 vs target 2020); mood tags overlap ['euphoric']    |
+|     |                   |               |         | (+0.38); lyric theme match (+0.81); language match      |
+|     |                   |               |         | (+0.32)                                                 |
+|   5 | Samba Cartography | Lua Vermelha  |    6.69 | mood match (+0.82); energy alignment (+2.85; gap 0.08   |
+|     |                   |               |         | from target 0.80); prefers produced/electric (+1.00);   |
+|     |                   |               |         | popularity fit (+0.65; song 74 vs target 70); era fit   |
+|     |                   |               |         | (+0.99; decade 2022 vs target 2020); mood tags overlap  |
+|     |                   |               |         | ['euphoric'] (+0.38)                                    |
+
+
+## Chill lofi room
+
+** Mode: balanced ** (diversity: −0.85 repeat artist, −0.40 repeat genre)
+
+|   # | Title              | Artist         |   Score | Reasons                                                  |
+|-----|--------------------|----------------|---------|----------------------------------------------------------|
+|   1 | Midnight Coding    | LoRoom         |    9.58 | genre match (+2.00); mood match (+1.00); energy          |
+|     |                    |                |         | alignment (+1.86; gap 0.07 from target 0.35); prefers    |
+|     |                    |                |         | acoustic (+0.85); popularity fit (+0.67; song 55 vs      |
+|     |                    |                |         | target 45); era fit (+1.10; decade 2019 vs target 2020); |
+|     |                    |                |         | mood tags overlap ['calm', 'focused'] (+0.84); lyric     |
+|     |                    |                |         | theme match (+0.90); language match (+0.35)              |
+|   2 | Library Rain       | Paper Lanterns |    9.53 | genre match (+2.00); mood match (+1.00); energy          |
+|     |                    |                |         | alignment (+2.00; gap 0.00 from target 0.35); prefers    |
+|     |                    |                |         | acoustic (+1.03); popularity fit (+0.73; song 48 vs      |
+|     |                    |                |         | target 45); era fit (+1.10; decade 2021 vs target 2020); |
+|     |                    |                |         | mood tags overlap ['calm'] (+0.42); lyric theme match    |
+|     |                    |                |         | (+0.90); language match (+0.35)                          |
+|   3 | Focus Flow         | LoRoom         |    7.82 | genre match (+2.00); energy alignment (+1.90; gap 0.05   |
+|     |                    |                |         | from target 0.35); prefers acoustic (+0.94); popularity  |
+|     |                    |                |         | fit (+0.70; song 52 vs target 45); era fit (+1.10;       |
+|     |                    |                |         | decade 2020 vs target 2020); mood tags overlap ['calm',  |
+|     |                    |                |         | 'focused'] (+0.84); language match (+0.35)               |
+|   4 | Rain on Tin Roof   | The Mayhews    |    6.66 | mood match (+1.00); energy alignment (+1.92; gap 0.04    |
+|     |                    |                |         | from target 0.35); prefers acoustic (+1.13); popularity  |
+|     |                    |                |         | fit (+0.74; song 44 vs target 45); era fit (+1.10;       |
+|     |                    |                |         | decade 2018 vs target 2020); mood tags overlap ['calm']  |
+|     |                    |                |         | (+0.42); language match (+0.35)                          |
+|   5 | Spacewalk Thoughts | Orbit Bloom    |    6.55 | mood match (+1.00); energy alignment (+1.86; gap 0.07    |
+|     |                    |                |         | from target 0.35); prefers acoustic (+1.10); popularity  |
+|     |                    |                |         | fit (+0.72; song 41 vs target 45); era fit (+1.10;       |
+|     |                    |                |         | decade 2017 vs target 2020); mood tags overlap ['calm']  |
+|     |                    |                |         | (+0.42); language match (+0.35)                          |
+
+
+## Deep intense rock
+
+** Mode: balanced ** (diversity: −0.85 repeat artist, −0.40 repeat genre)
+
+|   # | Title             | Artist        |   Score | Reasons                                                 |
+|-----|-------------------|---------------|---------|---------------------------------------------------------|
+|   1 | Storm Runner      | Voltline      |    9.98 | genre match (+2.00); mood match (+1.00); energy         |
+|     |                   |               |         | alignment (+1.98; gap 0.01 from target 0.90); prefers   |
+|     |                   |               |         | produced/electric (+1.08); popularity fit (+0.73; song  |
+|     |                   |               |         | 62 vs target 65); era fit (+1.10; decade 2018 vs target |
+|     |                   |               |         | 2020); mood tags overlap ['aggressive', 'euphoric']     |
+|     |                   |               |         | (+0.84); lyric theme match (+0.90); language match      |
+|     |                   |               |         | (+0.35)                                                 |
+|   2 | Redline Tesseract | Iron Circuit  |    6.95 | mood match (+1.00); energy alignment (+1.88; gap 0.06   |
+|     |                   |               |         | from target 0.90); prefers produced/electric (+1.15);   |
+|     |                   |               |         | popularity fit (+0.63; song 81 vs target 65); era fit   |
+|     |                   |               |         | (+1.10; decade 2023 vs target 2020); mood tags overlap  |
+|     |                   |               |         | ['aggressive', 'euphoric'] (+0.84); language match      |
+|     |                   |               |         | (+0.35)                                                 |
+|   3 | Gym Hero          | Max Pulse     |    6.95 | mood match (+1.00); energy alignment (+1.94; gap 0.03   |
+|     |                   |               |         | from target 0.90); prefers produced/electric (+1.14);   |
+|     |                   |               |         | popularity fit (+0.58; song 88 vs target 65); era fit   |
+|     |                   |               |         | (+1.10; decade 2022 vs target 2020); mood tags overlap  |
+|     |                   |               |         | ['aggressive', 'euphoric'] (+0.84); language match      |
+|     |                   |               |         | (+0.35)                                                 |
+|   4 | Battery Heart     | K7 Vega       |    5.97 | energy alignment (+1.96; gap 0.02 from target 0.90);    |
+|     |                   |               |         | prefers produced/electric (+1.10); popularity fit       |
+|     |                   |               |         | (+0.61; song 83 vs target 65); era fit (+1.10; decade   |
+|     |                   |               |         | 2021 vs target 2020); mood tags overlap ['aggressive',  |
+|     |                   |               |         | 'euphoric'] (+0.84); language match (+0.35)             |
+|   5 | Rooftop Lights    | Indigo Parade |    5.11 | energy alignment (+1.72; gap 0.14 from target 0.90);    |
+|     |                   |               |         | prefers produced/electric (+0.78); popularity fit       |
+|     |                   |               |         | (+0.74; song 66 vs target 65); era fit (+1.10; decade   |
+|     |                   |               |         | 2023 vs target 2020); mood tags overlap ['euphoric']    |
+|     |                   |               |         | (+0.42); language match (+0.35)                         |
+
+
+## Adversarial — moody + max energy
+
+** Mode: balanced ** (diversity: −0.85 repeat artist, −0.40 repeat genre)
+
+|   # | Title            | Artist        |   Score | Reasons                                                |
+|-----|------------------|---------------|---------|--------------------------------------------------------|
+|   1 | Sunrise City     | Neon Echo     |    7.81 | genre match (+2.00); energy alignment (+1.74; gap 0.13 |
+|     |                  |               |         | from target 0.95); prefers produced/electric (+0.98);  |
+|     |                  |               |         | popularity fit (+0.73; song 78 vs target 80); era fit  |
+|     |                  |               |         | (+1.10; decade 2020 vs target 2021); lyric theme match |
+|     |                  |               |         | (+0.90); language match (+0.35)                        |
+|   2 | Gym Hero         | Max Pulse     |    7.24 | genre match (+2.00); energy alignment (+1.96; gap 0.02 |
+|     |                  |               |         | from target 0.95); prefers produced/electric (+1.14);  |
+|     |                  |               |         | popularity fit (+0.69; song 88 vs target 80); era fit  |
+|     |                  |               |         | (+1.10; decade 2022 vs target 2021); language match    |
+|     |                  |               |         | (+0.35)                                                |
+|   3 | Night Drive Loop | Neon Echo     |    6.99 | mood match (+1.00); energy alignment (+1.60; gap 0.20  |
+|     |                  |               |         | from target 0.95); prefers produced/electric (+0.94);  |
+|     |                  |               |         | popularity fit (+0.68; song 71 vs target 80); era fit  |
+|     |                  |               |         | (+1.10; decade 2021 vs target 2021); mood tags overlap |
+|     |                  |               |         | ['moody'] (+0.42); lyric theme match (+0.90); language |
+|     |                  |               |         | match (+0.35)                                          |
+|   4 | Rooftop Lights   | Indigo Parade |    6.49 | genre match (+2.00); energy alignment (+1.62; gap 0.19 |
+|     |                  |               |         | from target 0.95); prefers produced/electric (+0.78);  |
+|     |                  |               |         | popularity fit (+0.65; song 66 vs target 80); era fit  |
+|     |                  |               |         | (+1.10; decade 2023 vs target 2021); language match    |
+|     |                  |               |         | (+0.35)                                                |
+|   5 | Battery Heart    | K7 Vega       |    6.04 | energy alignment (+1.86; gap 0.07 from target 0.95);   |
+|     |                  |               |         | prefers produced/electric (+1.10); popularity fit      |
+|     |                  |               |         | (+0.73; song 83 vs target 80); era fit (+1.10; decade  |
+|     |                  |               |         | 2021 vs target 2021); lyric theme match (+0.90);       |
+|     |                  |               |         | language match (+0.35)                                 |
+
+
+--- Quick copy: pop profile, balanced + diversity ---
+
+|   # | Title             | Artist        |   Score | Reasons                                                 |
+|-----|-------------------|---------------|---------|---------------------------------------------------------|
+|   1 | Sunrise City      | Neon Echo     |    9.82 | genre match (+2.00); mood match (+1.00); energy         |
+|     |                   |               |         | alignment (+1.96; gap 0.02 from target 0.80); prefers   |
+|     |                   |               |         | produced/electric (+0.98); popularity fit (+0.69; song  |
+|     |                   |               |         | 78 vs target 70); era fit (+1.10; decade 2020 vs target |
+|     |                   |               |         | 2020); mood tags overlap ['euphoric', 'nostalgic']      |
+|     |                   |               |         | (+0.84); lyric theme match (+0.90); language match      |
+|     |                   |               |         | (+0.35)                                                 |
+|   2 | Rooftop Lights    | Indigo Parade |    8.29 | genre match (+2.00); mood match (+1.00); energy         |
+|     |                   |               |         | alignment (+1.92; gap 0.04 from target 0.80); prefers   |
+|     |                   |               |         | produced/electric (+0.78); popularity fit (+0.72; song  |
+|     |                   |               |         | 66 vs target 70); era fit (+1.10; decade 2023 vs target |
+|     |                   |               |         | 2020); mood tags overlap ['euphoric'] (+0.42); language |
+|     |                   |               |         | match (+0.35)                                           |
+|   3 | Gym Hero          | Max Pulse     |    7.37 | genre match (+2.00); energy alignment (+1.74; gap 0.13  |
+|     |                   |               |         | from target 0.80); prefers produced/electric (+1.14);   |
+|     |                   |               |         | popularity fit (+0.61; song 88 vs target 70); era fit   |
+|     |                   |               |         | (+1.10; decade 2022 vs target 2020); mood tags overlap  |
+|     |                   |               |         | ['euphoric'] (+0.42); language match (+0.35)            |
+|   4 | Battery Heart     | K7 Vega       |    6.37 | energy alignment (+1.84; gap 0.08 from target 0.80);    |
+|     |                   |               |         | prefers produced/electric (+1.10); popularity fit       |
+|     |                   |               |         | (+0.65; song 83 vs target 70); era fit (+1.10; decade   |
+|     |                   |               |         | 2021 vs target 2020); mood tags overlap ['euphoric']    |
+|     |                   |               |         | (+0.42); lyric theme match (+0.90); language match      |
+|     |                   |               |         | (+0.35)                                                 |
+|   5 | Samba Cartography | Lua Vermelha  |    6.14 | mood match (+1.00); energy alignment (+1.84; gap 0.08   |
+|     |                   |               |         | from target 0.80); prefers produced/electric (+1.06);   |
+|     |                   |               |         | popularity fit (+0.72; song 74 vs target 70); era fit   |
+|     |                   |               |         | (+1.10; decade 2022 vs target 2020); mood tags overlap  |
+|     |                   |               |         | ['euphoric'] (+0.42)                                    |
 ```
-| # | Title        | Artist    | Score | Reasons |
-|---|--------------|-----------|-------|---------|
-| 1 | Sunrise City | Neon Echo | 9.82  | genre match; mood match; energy alignment; ... |
-```
-
-Your numbers will depend on the exact weights and prefs. If a rubric wants a screenshot, grab one from your own terminal after a run.
 
 ---
 
